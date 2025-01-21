@@ -104,6 +104,10 @@ const App = () => {
             <Recorder
               onRecordingComplete={addVoiceNote}
               recordingQuality={recordingQuality}
+              voiceNotes={filteredNotes}
+              onDelete={deleteVoiceNote}
+              onPlay={playVoiceNote}
+              onQualityChange={setRecordingQuality}
             />
           )}
         </Stack.Screen>

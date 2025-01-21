@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { View, Button, Text, StyleSheet, Alert } from 'react-native';
 import { Audio } from 'expo-av';
+import VoiceNoteList from './VoiceNoteList'; // Ensure this is the correct path
+import Settings from './Settings'; // Ensure this is the correct path
 
-const Recorder = ({ onRecordingComplete }) => {
+const Recorder = ({ onRecordingComplete, voiceNotes, onDelete, onPlay, onQualityChange }) => {
   const [recording, setRecording] = useState(null);
   const [recordingStatus, setRecordingStatus] = useState('');
   const [sound, setSound] = useState();
@@ -68,6 +70,12 @@ const Recorder = ({ onRecordingComplete }) => {
           onPress={stopSound}
         />
       )}
+      <VoiceNoteList
+        voiceNotes={voiceNotes}
+        onDelete={onDelete}
+        onPlay={onPlay}
+      />
+      <Settings onQualityChange={onQualityChange} />
     </View>
   );
 };
