@@ -63,6 +63,7 @@ const App = () => {
       name: `Note ${voiceNotes.length + 1}`,
       date: new Date().toLocaleString(),
       uri,
+      email: user.email, // Add the user's email to the voice note
     };
     setVoiceNotes((prev) => [...prev, newNote]);
   };
@@ -78,9 +79,7 @@ const App = () => {
   };
 
   const filteredNotes = voiceNotes.filter(
-    (note) =>
-      note.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      note.date.toLowerCase().includes(searchText.toLowerCase())
+    (note) => note.email === user?.email // Filter by user's email
   );
 
   return (
@@ -107,7 +106,7 @@ const App = () => {
               voiceNotes={filteredNotes}
               onDelete={deleteVoiceNote}
               onPlay={playVoiceNote}
-              onQualityChange={setRecordingQuality}
+              userEmail={user?.email} // Pass the user's email
             />
           )}
         </Stack.Screen>

@@ -4,11 +4,10 @@ import { Audio } from 'expo-av';
 import VoiceNoteList from './VoiceNoteList'; // Ensure this is the correct path
 import Settings from './Settings'; // Ensure this is the correct path
 
-const Recorder = ({ onRecordingComplete, voiceNotes, onDelete, onPlay, onQualityChange }) => {
+const Recorder = ({ onRecordingComplete, voiceNotes, onDelete, onPlay, onQualityChange, userEmail }) => {
   const [recording, setRecording] = useState(null);
   const [recordingStatus, setRecordingStatus] = useState('');
   const [sound, setSound] = useState();
-  const recordingRef = useRef(null);
 
   const startRecording = async () => {
     try {
@@ -51,6 +50,9 @@ const Recorder = ({ onRecordingComplete, voiceNotes, onDelete, onPlay, onQuality
     }
   };
 
+  // Filter voice notes by the user's email
+  const userVoiceNotes = voiceNotes.filter(note => note.email === userEmail);
+
   return (
     <View style={styles.container}>
       <Text>{recordingStatus}</Text>
@@ -71,7 +73,7 @@ const Recorder = ({ onRecordingComplete, voiceNotes, onDelete, onPlay, onQuality
         />
       )}
       <VoiceNoteList
-        voiceNotes={voiceNotes}
+        voiceNotes={userVoiceNotes} // Pass only the user's voice notes
         onDelete={onDelete}
         onPlay={onPlay}
       />
