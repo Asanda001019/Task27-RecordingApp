@@ -1,10 +1,8 @@
-
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-
-const Settings = ({ onQualityChange }) => {
+const Settings = ({ onQualityChange = () => {} }) => {
   const [quality, setQuality] = useState('HIGH');
 
   const handleQualityChange = (value) => {

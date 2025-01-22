@@ -28,7 +28,10 @@ const App = () => {
     try {
       const jsonValue = await AsyncStorage.getItem('@voice_notes');
       if (jsonValue) {
-        setVoiceNotes(JSON.parse(jsonValue));
+        const allNotes = JSON.parse(jsonValue);
+        // Filter notes by the logged-in user's email
+        const userNotes = allNotes.filter(note => note.email === user?.email);
+        setVoiceNotes(userNotes);
       }
     } catch (e) {
       console.error('Error loading notes:', e);
@@ -54,6 +57,12 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    if (user) {
+      loadNotes(); // Load notes whenever the user changes
+    }
+  }, [user]);
+
+  useEffect(() => {
     saveNotes(voiceNotes); // Save notes whenever voiceNotes changes
   }, [voiceNotes]);
 
@@ -63,7 +72,7 @@ const App = () => {
       name: `Note ${voiceNotes.length + 1}`,
       date: new Date().toLocaleString(),
       uri,
-      email: user.email, // Add the user's email to the voice note
+      email: user.email, // Associate the recording with the user's email
     };
     setVoiceNotes((prev) => [...prev, newNote]);
   };
@@ -78,10 +87,6 @@ const App = () => {
     await sound.playAsync();
   };
 
-  const filteredNotes = voiceNotes.filter(
-    (note) => note.email === user?.email // Filter by user's email
-  );
-
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={user ? 'Profile' : 'Register'}>
@@ -91,7 +96,7 @@ const App = () => {
           {() => (
             <ProfileScreen
               user={user}
-              voiceNotes={filteredNotes}
+              voiceNotes={voiceNotes}
               onDelete={deleteVoiceNote}
               onPlay={playVoiceNote}
               onQualityChange={setRecordingQuality}
@@ -103,7 +108,7 @@ const App = () => {
             <Recorder
               onRecordingComplete={addVoiceNote}
               recordingQuality={recordingQuality}
-              voiceNotes={filteredNotes}
+              voiceNotes={voiceNotes}
               onDelete={deleteVoiceNote}
               onPlay={playVoiceNote}
               userEmail={user?.email} // Pass the user's email
@@ -113,7 +118,7 @@ const App = () => {
         <Stack.Screen name="VoiceNoteList">
           {() => (
             <VoiceNoteList
-              voiceNotes={filteredNotes}
+              voiceNotes={voiceNotes}
               onDelete={deleteVoiceNote}
               onPlay={playVoiceNote}
             />

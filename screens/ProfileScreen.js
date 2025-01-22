@@ -1,13 +1,11 @@
-// screens/ProfileScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth } from '../screens/Firebase'; // Ensure this imports your initialized Firebase app
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const [userDetails, setUserDetails] = useState(null);
-  const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -15,10 +13,8 @@ const ProfileScreen = () => {
         // User is signed in, set user details
         setUserDetails({
           email: user.email,
-          displayName: user.displayName || 'No Name', // Optional: Fetch display name if available
           uid: user.uid,
         });
-        setDisplayName(user.displayName || ''); // Set initial display name
       } else {
         // No user is signed in, navigate to login
         navigation.navigate('Login');
@@ -29,71 +25,78 @@ const ProfileScreen = () => {
     return () => unsubscribe();
   }, [navigation]);
 
-  const handleLogout = async () => {
-    await auth.signOut();
-    navigation.navigate('Login');
-  };
-
-  const handleUpdateProfile = async () => {
-    const user = auth.currentUser ;
-    if (user) {
-      try {
-        await user.updateProfile({
-          displayName: displayName,
-        });
-        setUserDetails((prevDetails) => ({
-          ...prevDetails,
-          displayName: displayName,
-        }));
-        Alert.alert('Profile updated successfully!');
-      } catch (error) {
-        Alert.alert('Error updating profile:', error.message);
-      }
-    }
-  };
-
   return (
-    <View style={styles.container}>
-      {userDetails ? (
-        <>
-          <Text style={styles.welcomeText}>Welcome, {userDetails.displayName}</Text>
-          <Text>Email: {userDetails.email}</Text>
-          <Text>User ID: {userDetails.uid}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Update Display Name"
-            value={displayName}
-            onChangeText={setDisplayName}
-          />
-          <Button title="Update Profile" onPress={handleUpdateProfile} />
-          <Button title="Log Out" onPress={handleLogout} />
-          <Button title="Go to Recording" onPress={() => navigation.navigate('Recorder')} />
-        </>
-      ) : (
-        <Text>Loading user details...</Text>
-      )}
-    </View>
+    <ImageBackground 
+      source={require('../assets/Microphen.jpg')} // Adjust the path to your image
+      style={styles.background}
+      resizeMode="cover"
+    >
+      
+      <View style={styles.container}>
+        {userDetails ? (
+          <>
+            <Text style={styles.welcomeText}>Welcome to the Seamless Voice Recording App!</Text>
+            <Text style={styles.infoText}>Thank you for logging in: {userDetails.email}</Text>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Recorder')}>
+              <Text style={styles.buttonText}>Go to Recording</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <Text style={styles.loadingText}>Loading user details...</Text>
+        )}
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  container: {
+    width: '90%', // Use percentage for responsiveness
+    maxWidth: 400, // Maximum width for larger screens
+    backgroundColor: 'rgba(224, 242, 254, 0.8)', // Semi-transparent background for better readability
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
+    borderRadius: 10,
+    elevation: 5, // Add shadow for Android
+    shadowColor: '#000', // Add shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   welcomeText: {
     fontSize: 24,
     marginBottom: 10,
+    color: '#4F46E5', // Tailwind indigo-500
+    textAlign: 'center', // Center text
   },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
+  infoText: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: '#4B5563', // Tailwind gray-700
+    textAlign: 'center', // Center text
+  },
+  button: {
     width: '100%',
+    backgroundColor: '#4F46E5', // Tailwind indigo-700
+    paddingVertical: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF', // White
+    fontWeight: 'bold',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#4B5563', // Tailwind gray-700
+    textAlign: 'center', // Center text
   },
 });
 
